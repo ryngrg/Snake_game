@@ -74,6 +74,7 @@ int num_cherries = 0;
 SNcell * get_tail();
 void add_to_head();
 void move_snake(char);
+void free_snake(SNcell *);
 void disp();
 void new_cherry();
 bool snake_legal();
@@ -143,6 +144,7 @@ WINDOW *initialize_window(void)
  */
 void cleanup(void)
 {
+	free_snake(snakeHead);
 	endwin();
 }
 
@@ -160,6 +162,8 @@ void initialize_game(WINDOW *window)
 
 	/* Your code here. */
 	new_cherry();
+	add_to_head(WIN_W / 2 - 2, WIN_H / 2);
+	add_to_head(WIN_W / 2 - 1, WIN_H / 2);
 	add_to_head(WIN_W / 2, WIN_H / 2);
 	add_to_head(WIN_W / 2 + 1, WIN_H / 2);
 	add_to_head(WIN_W / 2 + 2, WIN_H / 2);
@@ -210,14 +214,20 @@ int main()
 		else if(key == 'q') {
 			break;
 		}
-		status = refresh();
 		disp();
 	}
-
 	cleanup();
 	printf("\nGame over!!!\n");
 	printf("cherries eaten: %d\n\n", num_cherries);
 	return EXIT_SUCCESS;
+}
+
+void free_snake(SNcell * head)
+{
+	if(head->next){	
+		free_snake(head->next);
+	}
+	free(head);
 }
 
 SNcell * get_tail()
@@ -247,6 +257,14 @@ void add_to_head(int x, int y)
 void new_cherry(){
 	cherry_x = (rand() % (WIN_W - 2)) + 1;
 	cherry_y = (rand() % (WIN_H - 2)) + 1;
+	SNcell * temp = snakeHead;
+	while(temp){
+		if((temp->x == cherry_x) && (temp->y == cherry_y)){
+			new_cherry();
+			break;
+		}
+		temp = temp->next;
+	}
 }
 
 void move_snake(char dir)
