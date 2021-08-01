@@ -1,2 +1,2 @@
 # Snake_game
-The snake game implemented in C using curses,h
+The snake game implemented in C using curses.h
